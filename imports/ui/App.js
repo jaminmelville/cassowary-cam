@@ -58,10 +58,12 @@ class App extends Component {
       <Router>
         <div className="container">
           <Route path="/" exact>
-            <Stats
-              events={this.props.events}
-              selected={this.state.selected}
-            />
+            {this.props.events.length > 0 &&
+              <Stats
+                events={this.props.events}
+                selected={this.state.selected}
+              />
+            }
             <div className="filters">
               <Tags
                 showUntagged
@@ -76,6 +78,11 @@ class App extends Component {
                 }}
               />
             </div>
+            {this.props.events.length === 0 &&
+              <p>
+                Nothing to see here..
+              </p>
+            }
             <ul className="row text-center list-unstyled">
               {events}
             </ul>

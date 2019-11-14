@@ -11,12 +11,12 @@ export default class EventsComponent extends Component {
 
   render() {
     return (
-      <li
-        className="col-xl-4 col-md-6 col-sm-12"
-        onMouseEnter={this.props.setActive}
-        onMouseMove={this.props.setActive}
-      >
-        <div className="image my-3 shadow-lg border border-light">
+      <li className="col-xl-4 col-md-6 col-sm-12">
+        <div
+          className="image my-3 shadow-lg border border-light"
+          onMouseEnter={this.props.setActive}
+          onMouseMove={this.props.setActive}
+        >
           <Link to={`/event/${this.props.event._id}`}>
             <div className="image__holder bg-dark">
               {this.props.isActive ?
@@ -32,7 +32,7 @@ export default class EventsComponent extends Component {
               }
             </div>
           </Link>
-          {this.props.event.tags.length === 0 && this.props.isActive &&
+          {this.props.event.tags.length === 0 &&
             <div
               className="image__delete bg-danger px-1"
             >
