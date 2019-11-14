@@ -69,7 +69,7 @@ export default class Stats extends Component {
           options={options}
           height={200}
           getElementAtEvent={(elements) => {
-            debugger
+            // debugger
           }}
         />
       </div>

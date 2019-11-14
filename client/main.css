@@ -32,7 +32,6 @@ body {
 }
 img {
   max-width: 100%;
-  cursor: pointer;
 }
 .event__tags {
   opacity: 0;

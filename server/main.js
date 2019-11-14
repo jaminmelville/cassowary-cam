@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import rimraf from 'rimraf';
+const fs = require('fs');
 import { Events } from '../imports/api/events';
 import { Tags } from '../imports/api/tags';
 import chokidar from 'chokidar';
-
-const fs = require('fs');
-const BASE = '/home/ben/Pictures';
+import { BASE, FILE_TO_WATCH } from './constants';
 
 Meteor.startup(() => {
   Tags.upsert({ name: 'pig' }, { $set: { name: 'pig' } });
@@ -53,7 +52,6 @@ function getDays() {
         image = images[parseInt(images.length / 2)];
       }
       return {
-        absolutePath: `${BASE}/motion-cam/${day}/${event}`,
         relativePath: `${day}/${event}`,
         image,
         timestamp: fs.statSync(`${BASE}/motion-cam/${day}/${event}`).mtime.getTime(),
@@ -74,10 +72,8 @@ Meteor.methods({
     const images = getSortedFiles(`${BASE}/motion-cam/${path}`);
     return images;
   },
-  delete(path) {
-    if (path) {
-      rimraf(`${BASE}/motion-cam/${path}`, () => {});
-    }
+  removeEvent(id) {
+    Events.remove({ _id: id });
   },
   sync() {
     getDays().forEach((day) => {
@@ -98,8 +94,8 @@ WebApp.connectHandlers.use('/image', (req, res, next) => {
   });
 });
 
-const watcher = chokidar
-  .watch('/home/ben/code/camera/latest.txt', {
+chokidar
+  .watch(FILE_TO_WATCH, {
     ignoreInitial: true,
   })
   .on('change', Meteor.bindEnvironment(path => {
