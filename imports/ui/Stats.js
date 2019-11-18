@@ -17,6 +17,10 @@ export default class Stats extends Component {
         days[day].events.push(event);
         return days;
       }, {});
+    let lastOurrence = false;
+    if (this.props.events.length > 1) {
+      lastOurrence = this.props.events[0];
+    }
     const data = {
       labels: Object.keys(eventsGroupedByDay),
       datasets: [{
@@ -24,6 +28,7 @@ export default class Stats extends Component {
         backgroundColor: 'rgba(255,255,255,1)',
         borderColor: 'rgba(55,255,255,1)',
         borderWidth: 1,
+        barThickness: 'flex',
         hoverBackgroundColor: 'rgba(55,255,255,1)',
         hoverBorderColor: 'rgba(55,255,255,1)',
         data: Object.keys(eventsGroupedByDay).map((key) => {
@@ -56,7 +61,12 @@ export default class Stats extends Component {
        },
     };
     return (
-      <div className="pt-5">
+      <div>
+        {!!lastOurrence &&
+          <div className="text-white text-right py-3">
+            Last activity was {moment(lastOurrence.timestamp).fromNow()}
+          </div>
+        }
         <Bar
           data={data}
           options={options}
