@@ -3,16 +3,12 @@ import { Bar } from 'react-chartjs-2';
 import moment from 'moment';
 import { withTracker } from 'meteor/react-meteor-data';
 import classNames from 'classnames';
-import { Tags } from '../api/tags.js';
 
-class TagsComponent extends Component {
+export default class TagsComponent extends Component {
 
   render() {
-    if (!this.props.ready) {
-      return null;
-    }
     const tags = this.props.tags.map((item) => {
-      const selected = this.props.selected.indexOf(item._id) >= 0;
+      const selected = this.props.selected.indexOf(item.name) >= 0;
       const tag = (
         <span key={item._id}>
           <span
@@ -21,7 +17,7 @@ class TagsComponent extends Component {
               'badge-dark': !selected,
             })}
             onClick={() => {
-              this.props.onChange(item._id);
+              this.props.onChange(item);
             }}
           >
             {item.name}
@@ -36,11 +32,11 @@ class TagsComponent extends Component {
         <span key='untagged'>
           <span
             className={classNames('badge tag', {
-              'badge-light': this.props.selected.indexOf('untagged') >= 0,
-              'badge-dark': this.props.selected.indexOf('untagged') < 0,
+              'badge-light': this.props.selected.indexOf('not-set') >= 0,
+              'badge-dark': this.props.selected.indexOf('not-set') < 0,
             })}
             onClick={() => {
-              this.props.onChange('untagged');
+              this.props.onChange({ name: 'not-set' });
             }}
           >
             untagged
@@ -57,11 +53,3 @@ class TagsComponent extends Component {
   }
 
 }
-
-export default withTracker(() => {
-  const handle = Meteor.subscribe('tags');
-  return {
-    ready: handle.ready(),
-    tags: Tags.find({}, { sort: { name: 1 } }).fetch(),
-  };
-})(TagsComponent);

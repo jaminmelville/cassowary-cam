@@ -6,13 +6,6 @@ export default class Stats extends Component {
 
   render() {
     const eventsGroupedByDay = this.props.events
-      .filter((event) => {
-        let shouldShow = this.props.selected.length === 0 || event.tags.filter(tag => this.props.selected.includes(tag)).length > 0;
-        if (this.props.selected.indexOf('untagged') >= 0) {
-          shouldShow = event.tags.length === 0;
-        }
-        return shouldShow;
-      })
       .reduce((days, event) => {
         const day = moment(event.timestamp).format('YYYY-MM-DD');
         if (Object.keys(days).indexOf(day) < 0) {

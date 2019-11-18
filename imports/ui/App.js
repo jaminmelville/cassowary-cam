@@ -3,102 +3,53 @@ import moment from 'moment';
 import { withTracker } from 'meteor/react-meteor-data';
 import {
   BrowserRouter as Router,
+  Redirect,
   Switch,
   Route,
   Link
 } from "react-router-dom";
 import { Events } from '../api/events.js';
-import Event from './Event';
-import Stats from './Stats';
-import Tags from './Tags';
+import { Tags } from '../api/tags.js';
 import Popup from './Popup';
+import Home from './Home';
 
 import { ROOT } from '../constants';
 
 class App extends Component {
 
-  state = {
-    active: false,
-    selected: [ 'untagged' ],
-  }
-
   render() {
     if (!this.props.ready) {
       return null;
     }
-    const events = this.props.events
-    .filter((event) => {
-      let shouldShow = this.state.selected.length === 0 || event.tags.filter(tag => this.state.selected.includes(tag)).length > 0;
-      if (this.state.selected.indexOf('untagged') >= 0) {
-        shouldShow = event.tags.length === 0;
-      }
-      return shouldShow;
-    })
-    .map(event => (
-      <Event
-        key={event._id}
-        event={event}
-        isActive={this.state.active === event}
-        setActive={() => {
-          this.setState({ active: event });
-        }}
-        delete={() => {
-          const next = Events.findOne(
-            { timestamp: { $lt: event.timestamp } },
-            { sort: { timestamp: -1 } },
-          );
-          const active = next;
-          this.setState({ active }, () => {
-            Meteor.call('removeEvent', event._id);
-          });
-        }}
-      />
-    ));
     return (
       <Router>
         <div className="container">
-          <Route path="/" exact>
-            {events.length > 0 &&
-              <Stats
+          <Switch>
+            <Route path="/tag/:tag/event/:event" component={Popup} />
+            <Route path="/tag/:tag" render={() =>
+              <Home
                 events={this.props.events}
-                selected={this.state.selected}
+                tags={this.props.tags}
               />
-            }
-            <div className="filters">
-              <Tags
-                showUntagged
-                selected={this.state.selected}
-                onChange={(id) => {
-                  if (this.state.selected.indexOf(id) < 0) {
-                    this.setState({ selected: [ id ]});
-                  } else {
-                    const selected = this.state.selected.filter(tag => tag !== id);
-                    this.setState({ selected });
-                  }
-                }}
-              />
-            </div>
-            {events.length === 0 &&
-              <p>
-                Nothing to see here..
-              </p>
-            }
-            <ul className="row text-center list-unstyled">
-              {events}
-            </ul>
-          </Route>
-          <Route path="/event/:id" component={Popup} />
+            } />
+            <Redirect
+              to="/tag/not-set"
+            />
+          </Switch>
         </div>
       </Router>
     );
   }
 }
 
+
 export default withTracker(() => {
-  const handle = Meteor.subscribe('events');
+  const eventsHandle = Meteor.subscribe('events');
+  const tagHandle = Meteor.subscribe('tags');
   const events = Events.find({}, { sort: { timestamp: -1 } }).fetch();
   return {
-    ready: handle.ready(),
+    ready: eventsHandle.ready() && tagHandle.ready(),
     events,
+    tags: Tags.find({}, { sort: { name: 1 } }).fetch(),
   };
 })(App);

@@ -10,7 +10,7 @@ import { ROOT } from '../constants';
 export default class Popup extends Component {
 
   render() {
-    const event = Events.findOne({ _id: this.props.match.params.id });
+    const event = Events.findOne({ _id: this.props.match.params.event });
     return (
       <div className="popup">
         <Link to="/" className="btn btn-secondary">Back to all</Link>

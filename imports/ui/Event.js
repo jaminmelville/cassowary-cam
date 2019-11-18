@@ -7,7 +7,7 @@ import Tags from './Tags';
 import { Events } from '../api/events.js';
 import { ROOT } from '../constants';
 
-export default class EventsComponent extends Component {
+export default class EventComponent extends Component {
 
   render() {
     return (
@@ -17,7 +17,7 @@ export default class EventsComponent extends Component {
           onMouseEnter={this.props.setActive}
           onMouseMove={this.props.setActive}
         >
-          <Link to={`/event/${this.props.event._id}`}>
+          <Link to={`/tag/${this.props.tag}/event/${this.props.event._id}`}>
             <div className="image__holder bg-dark">
               {this.props.isActive ?
                 <Playpeg
@@ -47,15 +47,16 @@ export default class EventsComponent extends Component {
           {this.props.isActive &&
             <div className="event__tags">
               <Tags
-                selected={this.props.event.tags}
-                onChange={(id) => {
-                  if (this.props.event.tags.indexOf(id) < 0) {
+                tags={this.props.tags}
+                selected={this.props.event.tags.map(id => this.props.tags.find(tag => tag._id === id).name)}
+                onChange={(t) => {
+                  if (this.props.event.tags.indexOf(t._id) < 0) {
                     Events.update({ _id: this.props.event._id}, {
-                      $addToSet: { tags: id }
+                      $addToSet: { tags: t._id }
                     });
                   } else {
                     Events.update({ _id: this.props.event._id}, {
-                      $pull: { tags: id }
+                      $pull: { tags: t._id }
                     });
                   }
                 }}
