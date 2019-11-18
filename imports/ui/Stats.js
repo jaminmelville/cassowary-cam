@@ -18,7 +18,7 @@ export default class Stats extends Component {
         return days;
       }, {});
     let lastOurrence = false;
-    if (this.props.events.length > 1) {
+    if (this.props.events.length > 0) {
       lastOurrence = this.props.events[0];
     }
     const data = {
@@ -28,7 +28,6 @@ export default class Stats extends Component {
         backgroundColor: 'rgba(255,255,255,1)',
         borderColor: 'rgba(55,255,255,1)',
         borderWidth: 1,
-        barThickness: 'flex',
         hoverBackgroundColor: 'rgba(55,255,255,1)',
         hoverBorderColor: 'rgba(55,255,255,1)',
         data: Object.keys(eventsGroupedByDay).map((key) => {
