@@ -5,24 +5,26 @@ import moment from 'moment';
 export default class Stats extends Component {
 
   render() {
-    const eventsGroupedByDay = this.props.events
-      .reduce((days, event) => {
-        const day = moment(event.timestamp).format('YYYY-MM-DD');
-        if (Object.keys(days).indexOf(day) < 0) {
-          days[day] = {
-            events: [],
-            day,
-          };
-        }
-        days[day].events.push(event);
-        return days;
-      }, {});
-    let lastOurrence = false;
-    if (this.props.events.length > 0) {
-      lastOurrence = this.props.events[0];
+    const firstOurrence = this.props.events[this.props.events.length - 1];
+    const lastOurrence = this.props.events[0];
+
+    const activeMonth = moment(firstOurrence.timestamp).startOf('month');
+    const endMonth = moment();
+    const months = [];
+
+    while (endMonth > activeMonth || activeMonth.format('M') === endMonth.format('M')) {
+       months.push({
+         label: activeMonth.format('MMM'),
+         moment: moment(activeMonth),
+         events: [],
+       });
+       activeMonth.add(1, 'month');
     }
+    this.props.events.forEach((event) => {
+      months.find(month => month.moment.isSame(event.timestamp, 'month')).events.push(event);
+    });
     const data = {
-      labels: Object.keys(eventsGroupedByDay),
+      labels: months.map(month => month.label),
       datasets: [{
         label: false,
         backgroundColor: 'rgba(255,255,255,1)',
@@ -30,9 +32,7 @@ export default class Stats extends Component {
         borderWidth: 1,
         hoverBackgroundColor: 'rgba(55,255,255,1)',
         hoverBorderColor: 'rgba(55,255,255,1)',
-        data: Object.keys(eventsGroupedByDay).map((key) => {
-          return { x: key, y: eventsGroupedByDay[key].events.length };
-        })
+        data: months.map(month => month.events.length),
       }],
     };
     const options = {
@@ -46,26 +46,20 @@ export default class Stats extends Component {
             display: false //this will remove only the label
           },
         }],
-         xAxes: [{
-           ticks: {
-             display: false //this will remove only the label
-           },
-           offset: true,
-           type: 'time',
-					 display: true,
-					 time: {
-					   round: 'day'
-					 }
-         }],
+        xAxes: [{
+          ticks: {
+            fontColor: 'rgba(255,255,255,1)',
+          },
+        }]
        },
     };
     return (
       <div>
-        {!!lastOurrence &&
-          <div className="text-white text-right py-3">
-            Last activity was {moment(lastOurrence.timestamp).fromNow()}
-          </div>
-        }
+        <div className="text-white text-right py-3">
+          Last activity was {moment(lastOurrence.timestamp).fromNow()}
+          <br />
+          A total of {this.props.events.length} sightings
+        </div>
         <Bar
           data={data}
           options={options}
