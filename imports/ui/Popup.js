@@ -17,7 +17,7 @@ export default class Popup extends Component {
     return (
       <div className="popup">
         <Link to={`/tag/${this.props.match.params.tag}`} className="btn btn-secondary">Back to all</Link>
-        <h2 className="text-white text-center">{tags.join(', ').toUpperCase()} {tags.length > 0 && '|'} {moment(event.timestamp).format('dddd do MMMM YYYY')}</h2>
+        <h2 className="text-white text-center">{tags.join(', ').toUpperCase()} {tags.length > 0 && '|'} {moment(event.timestamp).format('dddd Do MMMM YYYY')}</h2>
         <div className="image my-3 shadow-lg border border-light">
           <div className="image__holder bg-dark">
             <Playpeg
