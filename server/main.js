@@ -1,10 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import rimraf from 'rimraf';
 const fs = require('fs');
 import { Events } from '../imports/api/events';
 import { Tags } from '../imports/api/tags';
-import chokidar from 'chokidar';
-import { BASE, FILE_TO_WATCH } from './constants';
+import { BASE } from './constants';
 
 Meteor.startup(() => {
   Tags.upsert({ name: 'pig' }, { $set: { name: 'pig' } });
@@ -94,11 +92,8 @@ WebApp.connectHandlers.use('/image', (req, res, next) => {
   });
 });
 
-chokidar
-  .watch(FILE_TO_WATCH, {
-    ignoreInitial: true,
-  })
-  .on('change', Meteor.bindEnvironment(path => {
-    Meteor.call('sync')
-  }))
-  .on('error', Meteor.bindEnvironment(err => console.log(err)));
+WebApp.connectHandlers.use('/sync', (req, res, next) => {
+  // Meteor.call('sync')
+  res.writeHead(200);
+  res.end('synced\n');
+});
