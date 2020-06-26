@@ -9,6 +9,7 @@ class EventsClass extends Mongo.Collection {
     rimraf(`${BASE}/motion-cam/${event.relativePath}`, () => {});
     return super.remove(selector, callback);
   }
+
 }
 
 export const Events = new EventsClass('events');

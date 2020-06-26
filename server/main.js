@@ -63,9 +63,6 @@ function getDays() {
 }
 
 Meteor.methods({
-  days() {
-    return getDays();
-  },
   images(path) {
     const images = getSortedFiles(`${BASE}/motion-cam/${path}`);
     return images;
@@ -82,6 +79,12 @@ Meteor.methods({
         Events.update({ tags: { $exists : false } }, { $set: { tags: [] } });
       })
     });
+  },
+  syncEvent(event) {
+    Events.upsert({ relativePath: event.relativePath }, {
+      $set: { ...event },
+    });
+    Events.update({ tags: { $exists : false } }, { $set: { tags: [] } });
   }
 });
 
@@ -93,7 +96,19 @@ WebApp.connectHandlers.use('/image', (req, res, next) => {
 });
 
 WebApp.connectHandlers.use('/sync', (req, res, next) => {
-  // Meteor.call('sync')
+  const dayDir = req.url.split('/')[1];
+  const eventDir = req.url.split('/')[2];
+  const images = getSortedFiles(`${BASE}/motion-cam/${dayDir}/${eventDir}`);
+  let image = '';
+  if (images.length) {
+    image = images[parseInt(images.length / 2)];
+  }
+  const event = {
+    relativePath: `${dayDir}/${eventDir}`,
+    image,
+    timestamp: fs.statSync(`${BASE}/motion-cam/${dayDir}/${eventDir}`).mtime.getTime(),
+  };
+  Meteor.call('syncEvent', event)
   res.writeHead(200);
-  res.end('synced\n');
+  res.end(`directory ${dayDir}/${eventDir} synced\n`);
 });
