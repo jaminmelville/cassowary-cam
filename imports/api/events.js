@@ -1,5 +1,5 @@
 import { Mongo } from 'meteor/mongo';
-const BASE = '/home/ben/Pictures';
+const BASE = '/home/ubuntu/Pictures';
 import rimraf from 'rimraf';
 
 class EventsClass extends Mongo.Collection {
