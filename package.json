@@ -10,7 +10,7 @@
   "dependencies": {
     "@babel/runtime": "^7.10.2",
     "async": "^2.6.3",
-    "chart.js": "^2.9.2",
+    "chart.js": "^2.9.4",
     "classnames": "^2.2.6",
     "meteor-node-stubs": "^0.4.1",
     "moment": "^2.26.0",
