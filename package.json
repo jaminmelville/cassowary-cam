@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.10.2",
-    "async": "^2.6.3",
+    "async": "^2.6.4",
     "chart.js": "^2.9.2",
     "classnames": "^2.2.6",
     "meteor-node-stubs": "^0.4.1",
